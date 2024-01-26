@@ -9,4 +9,7 @@
             - `nano ~/.bashrc`
             - Add line to bottom of file `export OPENAI_API_KEY='key_here'`
             - Apply changes with `source ~/.bashrc` or by restarting terminal
-2) 
+
+## Instructions
+1) In main.py, update `CURR_GPT_PROMPT` to the desired prompt
+2) Run `python3 main.py`
