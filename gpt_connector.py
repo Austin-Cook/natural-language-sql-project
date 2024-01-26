@@ -1,5 +1,6 @@
 import os
 from openai import OpenAI
+import openai
 
 class GPTConnector:
     def __init__(self):
@@ -14,11 +15,12 @@ class GPTConnector:
     def ask_gpt(self, prompt):        
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+            max_tokens=200
         )
         
         # access response string
         response_message = response.choices[0].message.content
         
-        print(response_message)
         return response_message
