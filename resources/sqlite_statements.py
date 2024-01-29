@@ -30,8 +30,7 @@ CREATE_STATEMENTS = [
     "foreign key (item_id) references item (id) "
     "on delete cascade "
     "on update cascade "
-    ");",
-    ""
+    ");"
 ]
 
 INSERT_STATEMENTS = [

@@ -1,33 +1,41 @@
 from sqlite_db import Database
 from gpt_connector import GPTConnector
 from resources.sqlite_statements import CREATE_STATEMENTS, INSERT_STATEMENTS, DELETE_STATEMENTS
+from resources.prompts import PROMPTS
 
 DB_FILE = "db/sqlitedb.db"
-CURR_GPT_PROMPT = \
-    "Given this create table statement, create a sqlite select statement for the following prompt and return only the selected statement: " + \
-    "Select the highest salaried baker. " + \
-    "create table if not exists baker ( " + "id integer primary key, " + "name varchar (20), " + \
-    "birthdate date, " + "salary integer, " + "favorite_item integer, " + \
-    "foreign key (favorite_item) references item (id) " + "on delete set null " + "on update cascade"
-
 
 def main():
     db = Database(DB_FILE)
     
-    # reset database
-    db.create_tables(CREATE_STATEMENTS)
-    db.execute_all(DELETE_STATEMENTS)
-    db.execute_all(INSERT_STATEMENTS)
+    for prompt in PROMPTS:
+        print("Prompt: " + prompt)
+        
+        # reset database
+        db.create_tables(CREATE_STATEMENTS)
+        db.execute_all(DELETE_STATEMENTS)
+        db.execute_all(INSERT_STATEMENTS)
     
-    # prompt GPT for a query
-    gpt_connector = GPTConnector()
-    gpt_query = gpt_connector.ask_gpt(CURR_GPT_PROMPT)
-    print(gpt_query)
+        # prompt GPT for a query
+        gpt_connector = GPTConnector()
+        gpt_query = gpt_connector.ask_gpt(prompt)
+        print(gpt_query)
+        
+        # run the query on the database
+        query_response = db.query(gpt_query)
+        print("DB response:")
+        print(query_response)
+        
+        # prompt GPT for a friendly response of the results
+        request_friendly_response = "Here is the database query result: " + query_response + \
+            " \nExplain the results in a single sentance Do not include the select statement or "\
+            "anything other than a single sentence explaining the results. Here is the query that "\
+            "produced the response for context: " + prompt
+        query_response = gpt_connector.ask_gpt(request_friendly_response)
+        print("Friendly response:")
+        print(query_response)
+        print()
     
-    # run the query on the database
-    query_response = db.query(gpt_query)
-    print("Db response:")
-    print(query_response)
 
 
 if __name__ == "__main__":
